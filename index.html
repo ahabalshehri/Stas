@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>تقييم مستوى خدمة المختبر | Laboratory Service Evaluation</title>
+
   <style>
     :root {
       --primary: #14b8c7;
       --primary-dark: #0f7885;
+      --accent: #f59e0b;
       --card: #ffffff;
       --text: #111827;
       --muted: #6b7280;
@@ -16,7 +18,11 @@
       --danger: #b91c1c;
       --shadow: 0 22px 60px rgba(15, 23, 42, 0.12);
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -27,70 +33,436 @@
         radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.16), transparent 35%),
         linear-gradient(180deg, #f8fafc, #eef2f7);
     }
-    body[dir="ltr"] { font-family: "Arial", "Tahoma", sans-serif; }
-    .page { width: min(760px, calc(100% - 24px)); margin: 0 auto; padding: 28px 0 46px; }
-    .form-shell { overflow: hidden; border-radius: 32px; background: var(--card); box-shadow: var(--shadow); border: 1px solid rgba(229,231,235,.9); }
-    .header { position: relative; padding: 30px 28px; text-align: center; color: #fff; background: linear-gradient(135deg, #0f7885, #14b8c7); }
-    .header::before, .header::after { content: ""; position: absolute; border-radius: 999px; background: rgba(255,255,255,.13); }
-    .header::before { width: 180px; height: 180px; right: -55px; top: -70px; }
-    .header::after { width: 140px; height: 140px; left: -45px; bottom: -60px; }
-    .header-content { position: relative; z-index: 1; }
-    .language-switch { display: inline-flex; gap: 8px; padding: 6px; margin-bottom: 16px; border-radius: 999px; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.24); }
-    .lang-btn { border: 0; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 800; cursor: pointer; color: rgba(255,255,255,.88); background: transparent; transition: .18s ease; font-family: inherit; }
-    .lang-btn.active { color: #0f7885; background: #fff; box-shadow: 0 8px 20px rgba(15,23,42,.16); }
-    .small-title { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.16); font-size: 14px; font-weight: 700; }
-    h1 { margin: 0; font-size: clamp(28px, 5vw, 42px); line-height: 1.35; font-weight: 800; }
-    .intro { max-width: 620px; margin: 18px auto 0; font-size: 18px; line-height: 1.9; color: rgba(255,255,255,.92); }
-    .visit-date { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 10px 14px; border-radius: 16px; color: #075985; background: #e0faff; font-size: 16px; font-weight: 800; }
-    .content { padding: 26px 24px 30px; }
-    .rating-guide { margin: 0 0 24px; padding: 16px; border-radius: 24px; background: #f8fafc; border: 1px solid var(--border); }
-    .rating-guide-title { margin: 0 0 14px; color: #334155; font-size: 16px; font-weight: 800; text-align: center; }
-    .rating-guide-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; direction: ltr; }
-    .guide-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 92px; border-radius: 18px; background: #fff; border: 1px solid var(--border); color: #475569; font-size: 13px; font-weight: 700; text-align: center; }
-    html[dir="rtl"] .guide-item { direction: rtl; }
-    html[dir="ltr"] .guide-item { direction: ltr; }
-    .guide-item svg { width: 44px; height: 44px; }
-    .question-card { padding: 22px 18px; border-bottom: 1px solid #edf2f7; text-align: center; }
-    .question-card:last-of-type { border-bottom: 0; }
-    .question-title { margin: 0 auto 18px; max-width: 620px; font-size: 21px; line-height: 1.8; font-weight: 800; color: #111827; }
-    .choices { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: min(430px, 100%); margin: 0 auto; direction: ltr; }
-    .choice { position: relative; display: block; }
-    .choice input { position: absolute; opacity: 0; pointer-events: none; }
-    .choice-button { display: grid; place-items: center; width: 76px; height: 76px; margin: 0 auto; border-radius: 999px; border: 2px solid transparent; background: #fff; cursor: pointer; transition: .18s ease; }
-    .choice-button svg { width: 58px; height: 58px; display: block; transition: .18s ease; }
-    .choice-button:hover { transform: translateY(-2px); background: #f8fafc; box-shadow: 0 12px 24px rgba(15,23,42,.10); }
-    .choice input:checked + .choice-button { border-color: var(--primary); background: #ecfeff; box-shadow: 0 0 0 6px rgba(20,184,199,.14); transform: translateY(-2px) scale(1.04); }
-    .choice input:checked + .choice-button svg { transform: scale(1.06); }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-    .comment-area { margin-top: 20px; padding: 22px 18px 6px; border-top: 1px solid #edf2f7; }
-    .comment-label { display: block; margin: 0 0 12px; font-size: 21px; line-height: 1.7; font-weight: 800; text-align: center; }
-    textarea { width: 100%; min-height: 140px; resize: vertical; border: 1px solid var(--border); border-radius: 22px; padding: 16px; font-family: inherit; font-size: 17px; line-height: 1.8; outline: none; background: #fbfdff; }
-    textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 5px rgba(20,184,199,.12); background: #fff; }
-    .actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
-    .submit-btn, .reset-btn { border: 0; border-radius: 16px; padding: 15px 26px; font-family: inherit; font-size: 18px; font-weight: 800; cursor: pointer; transition: .2s ease; }
-    .submit-btn { min-width: 220px; color: #fff; background: linear-gradient(135deg, #10b8c9, #0f7885); box-shadow: 0 14px 28px rgba(15,120,133,.28); }
-    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 34px rgba(15,120,133,.34); }
-    .reset-btn { color: #0f7885; background: #e0faff; }
-    .message { display: none; margin-top: 18px; padding: 15px 18px; border-radius: 18px; text-align: center; font-weight: 800; line-height: 1.8; }
-    .message.success { display: block; color: var(--success); background: #ecfdf5; border: 1px solid #bbf7d0; }
-    .message.error { display: block; color: var(--danger); background: #fff1f2; border: 1px solid #fecdd3; }
-    .footer-note { margin: 18px auto 0; max-width: 680px; color: #64748b; font-size: 14px; line-height: 1.8; text-align: center; }
+
+    body[dir="ltr"] {
+      font-family: "Arial", "Tahoma", sans-serif;
+    }
+
+    .page {
+      width: min(760px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 28px 0 46px;
+    }
+
+    .form-shell {
+      overflow: hidden;
+      border-radius: 32px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(229, 231, 235, 0.9);
+    }
+
+    .header {
+      position: relative;
+      padding: 30px 28px 30px;
+      text-align: center;
+      color: #ffffff;
+      background: linear-gradient(135deg, #0f7885, #14b8c7);
+    }
+
+    .header::before,
+    .header::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    .header::before {
+      width: 180px;
+      height: 180px;
+      right: -55px;
+      top: -70px;
+    }
+
+    .header::after {
+      width: 140px;
+      height: 140px;
+      left: -45px;
+      bottom: -60px;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .language-switch {
+      display: inline-flex;
+      gap: 8px;
+      padding: 6px;
+      margin-bottom: 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+    }
+
+    .lang-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.88);
+      background: transparent;
+      transition: 0.18s ease;
+    }
+
+    .lang-btn.active {
+      color: #0f7885;
+      background: #ffffff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
+    }
+
+    .small-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 42px);
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .intro {
+      max-width: 620px;
+      margin: 18px auto 0;
+      font-size: 18px;
+      line-height: 1.9;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .visit-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      color: #075985;
+      background: #e0faff;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .content {
+      padding: 26px 24px 30px;
+    }
+
+    .rating-guide {
+      margin: 0 0 24px;
+      padding: 16px;
+      border-radius: 24px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .rating-guide-title {
+      margin: 0 0 14px;
+      color: #334155;
+      font-size: 16px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .rating-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      direction: ltr;
+    }
+
+    .guide-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 92px;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: #475569;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    html[dir="rtl"] .guide-item {
+      direction: rtl;
+    }
+
+    html[dir="ltr"] .guide-item {
+      direction: ltr;
+    }
+
+    .guide-item svg {
+      width: 44px;
+      height: 44px;
+    }
+
+    .question-card {
+      padding: 22px 18px;
+      border-bottom: 1px solid #edf2f7;
+      text-align: center;
+    }
+
+    .question-card:last-of-type {
+      border-bottom: 0;
+    }
+
+    .question-title {
+      margin: 0 auto 18px;
+      max-width: 620px;
+      font-size: 21px;
+      line-height: 1.8;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: min(430px, 100%);
+      margin: 0 auto;
+      direction: ltr;
+    }
+
+    .choice {
+      position: relative;
+      display: block;
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice-button {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background: #ffffff;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .choice-button svg {
+      width: 58px;
+      height: 58px;
+      display: block;
+      transition: 0.18s ease;
+    }
+
+    .choice-button:hover {
+      transform: translateY(-2px);
+      background: #f8fafc;
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
+    }
+
+    .choice input:checked + .choice-button {
+      border-color: var(--primary);
+      background: #ecfeff;
+      box-shadow: 0 0 0 6px rgba(20, 184, 199, 0.14);
+      transform: translateY(-2px) scale(1.04);
+    }
+
+    .choice input:checked + .choice-button svg {
+      transform: scale(1.06);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .comment-area {
+      margin-top: 20px;
+      padding: 22px 18px 6px;
+      border-top: 1px solid #edf2f7;
+    }
+
+    .comment-label {
+      display: block;
+      margin: 0 0 12px;
+      font-size: 21px;
+      line-height: 1.7;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 17px;
+      line-height: 1.8;
+      outline: none;
+      background: #fbfdff;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 5px rgba(20, 184, 199, 0.12);
+      background: #ffffff;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .submit-btn,
+    .reset-btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 15px 26px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .submit-btn {
+      min-width: 220px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #10b8c9, #0f7885);
+      box-shadow: 0 14px 28px rgba(15, 120, 133, 0.28);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(15, 120, 133, 0.34);
+    }
+
+    .reset-btn {
+      color: #0f7885;
+      background: #e0faff;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding: 15px 18px;
+      border-radius: 18px;
+      text-align: center;
+      font-weight: 800;
+      line-height: 1.8;
+    }
+
+    .message.success {
+      display: block;
+      color: var(--success);
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+    }
+
+    .message.error {
+      display: block;
+      color: var(--danger);
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+    }
+
+    .footer-note {
+      margin: 18px auto 0;
+      max-width: 680px;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
     @media (max-width: 640px) {
-      .page { width: min(100% - 14px, 760px); padding-top: 10px; }
-      .form-shell { border-radius: 24px; }
-      .header { padding: 24px 16px 26px; }
-      .content { padding: 18px 12px 24px; }
-      .intro { font-size: 16px; }
-      .rating-guide-grid { grid-template-columns: repeat(2, 1fr); }
-      .question-card { padding: 20px 8px; }
-      .question-title { font-size: 18px; }
-      .choices { gap: 8px; }
-      .choice-button { width: 64px; height: 64px; }
-      .choice-button svg { width: 50px; height: 50px; }
-      .submit-btn, .reset-btn { width: 100%; }
+      .page {
+        width: min(100% - 14px, 760px);
+        padding-top: 10px;
+      }
+
+      .form-shell {
+        border-radius: 24px;
+      }
+
+      .header {
+        padding: 24px 16px 26px;
+      }
+
+      .content {
+        padding: 18px 12px 24px;
+      }
+
+      .intro {
+        font-size: 16px;
+      }
+
+      .rating-guide-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .question-card {
+        padding: 20px 8px;
+      }
+
+      .question-title {
+        font-size: 18px;
+      }
+
+      .choices {
+        gap: 8px;
+      }
+
+      .choice-button {
+        width: 64px;
+        height: 64px;
+      }
+
+      .choice-button svg {
+        width: 50px;
+        height: 50px;
+      }
+
+      .submit-btn,
+      .reset-btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
+
 <body>
   <main class="page">
     <section class="form-shell">
@@ -100,48 +472,94 @@
             <button type="button" class="lang-btn active" id="arabicBtn">العربية</button>
             <button type="button" class="lang-btn" id="englishBtn">English</button>
           </div>
+
           <div class="small-title" id="smallTitle">🧪 نموذج تجربة المستفيد</div>
           <h1 id="mainTitle">تقييم مستوى خدمة المختبر</h1>
-          <p class="intro" id="introText">هل أنت راض عن الخدمة الطبية المقدمة لك؟ شاركنا رأيك من خلال الإجابة على هذا الاستطلاع!</p>
+          <p class="intro" id="introText">
+            هل أنت راض عن الخدمة الطبية المقدمة لك؟ شاركنا رأيك من خلال الإجابة على هذا الاستطلاع!
+          </p>
           <div class="visit-date" id="visitDate">تاريخ الزيارة:</div>
         </div>
       </header>
+
       <form id="surveyForm" class="content">
         <section class="rating-guide" aria-label="Rating guide">
           <p class="rating-guide-title" id="ratingGuideTitle">اختر الأيقونة التي تعبّر عن مستوى رضاك</p>
           <div class="rating-guide-grid" id="ratingGuide"></div>
         </section>
+
         <div id="questions"></div>
+
         <section class="comment-area">
-          <label class="comment-label" for="comments" id="commentLabel">هل لديك أي اقتراحات أو تعليقات إضافية لتحسين خدمة المختبر؟</label>
+          <label class="comment-label" for="comments" id="commentLabel">
+            هل لديك أي اقتراحات أو تعليقات إضافية لتحسين خدمة المختبر؟
+          </label>
           <textarea id="comments" name="comments" placeholder="أدخل إجابتك"></textarea>
         </section>
+
         <div class="actions">
           <button type="submit" class="submit-btn" id="submitBtn">✈ إرسال</button>
           <button type="button" class="reset-btn" id="resetBtn">مسح الاختيارات</button>
         </div>
+
         <div id="message" class="message" role="alert"></div>
       </form>
     </section>
-    <p class="footer-note" id="footerNote">لا تقم أبداً بمشاركة كلمة مرورك. تستخدم الإجابات لتحسين جودة خدمة المختبر فقط.</p>
-  </main>
-  <script>
-    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjpxta_dhbpRRne6VmP8lzRsZZQPiH2WuBSZY6I2B6T4U4gwV7O-wYt4CsWFzKn6_jtQ/exec";
 
+    <p class="footer-note" id="footerNote">
+      لا تقم أبداً بمشاركة كلمة مرورك. تستخدم الإجابات لتحسين جودة خدمة المختبر فقط.
+    </p>
+  </main>
+
+  <script>
     const icons = {
-      sadRed: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="25" fill="none" stroke="#f44336" stroke-width="4.5"/><circle cx="23" cy="27" r="3.2" fill="#f44336"/><circle cx="41" cy="27" r="3.2" fill="#f44336"/><path d="M22 46c2.8-5.2 6.7-7.5 10-7.5s7.2 2.3 10 7.5" fill="none" stroke="#f44336" stroke-width="4.5" stroke-linecap="round"/></svg>`,
-      neutralYellow: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="25" fill="none" stroke="#f4b400" stroke-width="4.5"/><circle cx="23" cy="27" r="3.2" fill="#f4b400"/><circle cx="41" cy="27" r="3.2" fill="#f4b400"/><line x1="23" y1="42" x2="41" y2="42" stroke="#f4b400" stroke-width="4.5" stroke-linecap="round"/></svg>`,
-      smileBlue: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="25" fill="none" stroke="#16bfd6" stroke-width="4.5"/><circle cx="23" cy="27" r="3.2" fill="#16bfd6"/><circle cx="41" cy="27" r="3.2" fill="#16bfd6"/><path d="M22 38c3 4.3 6.4 6.3 10 6.3s7-2 10-6.3" fill="none" stroke="#16bfd6" stroke-width="4.5" stroke-linecap="round"/></svg>`,
-      happyGreen: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="25" fill="none" stroke="#86c34a" stroke-width="4.5"/><path d="M20.5 25.5c1.6-2.8 3.8-4.3 6.4-4.3s4.9 1.5 6.5 4.3" fill="none" stroke="#86c34a" stroke-width="4.5" stroke-linecap="round"/><path d="M38.5 25.5c1.6-2.8 3.8-4.3 6.4-4.3s4.9 1.5 6.5 4.3" fill="none" stroke="#86c34a" stroke-width="4.5" stroke-linecap="round"/><path d="M20 37c3.4 6.6 7.8 9.4 12 9.4S40.6 43.6 44 37" fill="none" stroke="#86c34a" stroke-width="4.5" stroke-linecap="round"/></svg>`
+      sadRed: `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="25" fill="none" stroke="#f44336" stroke-width="4.5"/>
+          <circle cx="23" cy="27" r="3.2" fill="#f44336"/>
+          <circle cx="41" cy="27" r="3.2" fill="#f44336"/>
+          <path d="M22 46c2.8-5.2 6.7-7.5 10-7.5s7.2 2.3 10 7.5" fill="none" stroke="#f44336" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+      `,
+      neutralYellow: `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="25" fill="none" stroke="#f4b400" stroke-width="4.5"/>
+          <circle cx="23" cy="27" r="3.2" fill="#f4b400"/>
+          <circle cx="41" cy="27" r="3.2" fill="#f4b400"/>
+          <line x1="23" y1="42" x2="41" y2="42" stroke="#f4b400" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+      `,
+      smileBlue: `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="25" fill="none" stroke="#16bfd6" stroke-width="4.5"/>
+          <circle cx="23" cy="27" r="3.2" fill="#16bfd6"/>
+          <circle cx="41" cy="27" r="3.2" fill="#16bfd6"/>
+          <path d="M22 38c3 4.3 6.4 6.3 10 6.3s7-2 10-6.3" fill="none" stroke="#16bfd6" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+      `,
+      happyGreen: `
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="25" fill="none" stroke="#86c34a" stroke-width="4.5"/>
+          <path d="M20.5 25.5c1.6-2.8 3.8-4.3 6.4-4.3s4.9 1.5 6.5 4.3" fill="none" stroke="#86c34a" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M38.5 25.5c1.6-2.8 3.8-4.3 6.4-4.3s4.9 1.5 6.5 4.3" fill="none" stroke="#86c34a" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M20 37c3.4 6.6 7.8 9.4 12 9.4S40.6 43.6 44 37" fill="none" stroke="#86c34a" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+      `
     };
 
     const translations = {
       ar: {
-        dir: "rtl", lang: "ar", smallTitle: "🧪 نموذج تجربة المستفيد", mainTitle: "تقييم مستوى خدمة المختبر",
+        dir: "rtl",
+        lang: "ar",
+        smallTitle: "🧪 نموذج تجربة المستفيد",
+        mainTitle: "تقييم مستوى خدمة المختبر",
         introText: "هل أنت راض عن الخدمة الطبية المقدمة لك؟ شاركنا رأيك من خلال الإجابة على هذا الاستطلاع!",
-        dateLabel: "تاريخ الزيارة:", ratingGuideTitle: "اختر الأيقونة التي تعبّر عن مستوى رضاك",
-        commentLabel: "هل لديك أي اقتراحات أو تعليقات إضافية لتحسين خدمة المختبر؟", commentPlaceholder: "أدخل إجابتك",
-        submitText: "✈ إرسال", resetText: "مسح الاختيارات",
+        dateLabel: "تاريخ الزيارة:",
+        ratingGuideTitle: "اختر الأيقونة التي تعبّر عن مستوى رضاك",
+        commentLabel: "هل لديك أي اقتراحات أو تعليقات إضافية لتحسين خدمة المختبر؟",
+        commentPlaceholder: "أدخل إجابتك",
+        submitText: "✈ إرسال",
+        resetText: "مسح الاختيارات",
         footerNote: "لا تقم أبداً بمشاركة كلمة مرورك. تستخدم الإجابات لتحسين جودة خدمة المختبر فقط.",
         errorMessage: "يرجى اختيار مستوى الرضا لجميع الأسئلة قبل الإرسال.",
         successMessage: "تم إرسال الإجابات بنجاح. شكراً لمشاركتك في تحسين خدمة المختبر.",
@@ -161,11 +579,17 @@
         ]
       },
       en: {
-        dir: "ltr", lang: "en", smallTitle: "🧪 Patient Experience Form", mainTitle: "Laboratory Service Evaluation",
+        dir: "ltr",
+        lang: "en",
+        smallTitle: "🧪 Patient Experience Form",
+        mainTitle: "Laboratory Service Evaluation",
         introText: "Are you satisfied with the medical service provided to you? Please share your opinion by answering this survey.",
-        dateLabel: "Visit Date:", ratingGuideTitle: "Choose the icon that represents your satisfaction level",
-        commentLabel: "Do you have any additional suggestions or comments to improve the laboratory service?", commentPlaceholder: "Enter your answer",
-        submitText: "✈ Submit", resetText: "Clear selections",
+        dateLabel: "Visit Date:",
+        ratingGuideTitle: "Choose the icon that represents your satisfaction level",
+        commentLabel: "Do you have any additional suggestions or comments to improve the laboratory service?",
+        commentPlaceholder: "Enter your answer",
+        submitText: "✈ Submit",
+        resetText: "Clear selections",
         footerNote: "Never share your password. Responses are used only to improve the quality of laboratory service.",
         errorMessage: "Please select a satisfaction level for all questions before submitting.",
         successMessage: "Your responses have been submitted successfully. Thank you for helping us improve the laboratory service.",
@@ -188,33 +612,94 @@
 
     let currentLanguage = "ar";
     let currentVisitDate = new Date();
+
+    // Paste your Google Apps Script Web App URL here after deployment.
+    // Example: const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycb.../exec";
+    const GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjpxta_dhbpRRne6VmP8lzRsZZQPiH2WuBSZY6I2B6T4U4gwV7O-wYt4CsWFzKn6_jtQ/exec";
+
     const elements = {
-      html: document.documentElement, body: document.body,
-      smallTitle: document.getElementById("smallTitle"), mainTitle: document.getElementById("mainTitle"), introText: document.getElementById("introText"), visitDate: document.getElementById("visitDate"),
-      ratingGuideTitle: document.getElementById("ratingGuideTitle"), ratingGuide: document.getElementById("ratingGuide"), questions: document.getElementById("questions"),
-      commentLabel: document.getElementById("commentLabel"), comments: document.getElementById("comments"), submitBtn: document.getElementById("submitBtn"), resetBtn: document.getElementById("resetBtn"),
-      footerNote: document.getElementById("footerNote"), message: document.getElementById("message"), form: document.getElementById("surveyForm"), arabicBtn: document.getElementById("arabicBtn"), englishBtn: document.getElementById("englishBtn")
+      html: document.documentElement,
+      body: document.body,
+      smallTitle: document.getElementById("smallTitle"),
+      mainTitle: document.getElementById("mainTitle"),
+      introText: document.getElementById("introText"),
+      visitDate: document.getElementById("visitDate"),
+      ratingGuideTitle: document.getElementById("ratingGuideTitle"),
+      ratingGuide: document.getElementById("ratingGuide"),
+      questions: document.getElementById("questions"),
+      commentLabel: document.getElementById("commentLabel"),
+      comments: document.getElementById("comments"),
+      submitBtn: document.getElementById("submitBtn"),
+      resetBtn: document.getElementById("resetBtn"),
+      footerNote: document.getElementById("footerNote"),
+      message: document.getElementById("message"),
+      form: document.getElementById("surveyForm"),
+      arabicBtn: document.getElementById("arabicBtn"),
+      englishBtn: document.getElementById("englishBtn")
     };
 
     function formatDate(language) {
       const locale = language === "ar" ? "ar-SA" : "en-US";
-      return currentVisitDate.toLocaleString(locale, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+      return currentVisitDate.toLocaleString(locale, {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     }
 
     function renderForm(language) {
       const t = translations[language];
       currentLanguage = language;
-      elements.html.lang = t.lang; elements.html.dir = t.dir; elements.body.dir = t.dir; document.title = t.mainTitle;
-      elements.arabicBtn.classList.toggle("active", language === "ar"); elements.englishBtn.classList.toggle("active", language === "en");
-      elements.smallTitle.textContent = t.smallTitle; elements.mainTitle.textContent = t.mainTitle; elements.introText.textContent = t.introText;
-      elements.visitDate.textContent = `${t.dateLabel} ${formatDate(language)}`; elements.ratingGuideTitle.textContent = t.ratingGuideTitle;
-      elements.commentLabel.textContent = t.commentLabel; elements.comments.placeholder = t.commentPlaceholder;
-      elements.submitBtn.textContent = t.submitText; elements.resetBtn.textContent = t.resetText; elements.footerNote.textContent = t.footerNote;
-      elements.message.className = "message"; elements.message.textContent = ""; elements.form.reset();
-      elements.ratingGuide.innerHTML = t.options.map(option => `<div class="guide-item">${option.icon}<span>${option.title}</span></div>`).join("");
+
+      elements.html.lang = t.lang;
+      elements.html.dir = t.dir;
+      elements.body.dir = t.dir;
+      document.title = `${t.mainTitle}`;
+
+      elements.arabicBtn.classList.toggle("active", language === "ar");
+      elements.englishBtn.classList.toggle("active", language === "en");
+
+      elements.smallTitle.textContent = t.smallTitle;
+      elements.mainTitle.textContent = t.mainTitle;
+      elements.introText.textContent = t.introText;
+      elements.visitDate.textContent = `${t.dateLabel} ${formatDate(language)}`;
+      elements.ratingGuideTitle.textContent = t.ratingGuideTitle;
+      elements.commentLabel.textContent = t.commentLabel;
+      elements.comments.placeholder = t.commentPlaceholder;
+      elements.submitBtn.textContent = t.submitText;
+      elements.resetBtn.textContent = t.resetText;
+      elements.footerNote.textContent = t.footerNote;
+      elements.message.className = "message";
+      elements.message.textContent = "";
+      elements.form.reset();
+
+      elements.ratingGuide.innerHTML = t.options.map(option => `
+        <div class="guide-item">
+          ${option.icon}
+          <span>${option.title}</span>
+        </div>
+      `).join("");
+
       elements.questions.innerHTML = t.questions.map((question, index) => {
         const questionNumber = index + 1;
-        return `<section class="question-card"><h2 class="question-title">${question}</h2><div class="choices" role="radiogroup" aria-label="${question}">${t.options.map(option => `<label class="choice" title="${option.title}" aria-label="${option.title}"><input type="radio" name="q${questionNumber}" value="${option.value}" required><span class="choice-button">${option.icon}<span class="sr-only">${option.title}</span></span></label>`).join("")}</div></section>`;
+        return `
+          <section class="question-card">
+            <h2 class="question-title">${question}</h2>
+            <div class="choices" role="radiogroup" aria-label="${question}">
+              ${t.options.map(option => `
+                <label class="choice" title="${option.title}" aria-label="${option.title}">
+                  <input type="radio" name="q${questionNumber}" value="${option.value}" required>
+                  <span class="choice-button">
+                    ${option.icon}
+                    <span class="sr-only">${option.title}</span>
+                  </span>
+                </label>
+              `).join("")}
+            </div>
+          </section>
+        `;
       }).join("");
     }
 
@@ -224,43 +709,77 @@
     elements.form.addEventListener("submit", async function(event) {
       event.preventDefault();
       const t = translations[currentLanguage];
+
       if (!elements.form.checkValidity()) {
         elements.message.className = "message error";
         elements.message.textContent = t.errorMessage;
         elements.form.reportValidity();
         return;
       }
+
       const formData = new FormData(elements.form);
       const payload = {
         submissionId: "LAB-" + Date.now(),
         submittedAt: new Date().toLocaleString(currentLanguage === "ar" ? "ar-SA" : "en-US"),
         visitDate: elements.visitDate.textContent.replace(`${t.dateLabel} `, ""),
         language: currentLanguage,
-        q1: formData.get("q1"), q2: formData.get("q2"), q3: formData.get("q3"), q4: formData.get("q4"), q5: formData.get("q5"), q6: formData.get("q6"),
-        comments: formData.get("comments") || "", source: "Interactive HTML Survey"
+        q1: formData.get("q1"),
+        q2: formData.get("q2"),
+        q3: formData.get("q3"),
+        q4: formData.get("q4"),
+        q5: formData.get("q5"),
+        q6: formData.get("q6"),
+        comments: formData.get("comments") || "",
+        source: "Interactive HTML Survey"
       };
+
       localStorage.setItem("laboratorySatisfactionSurveyLastSubmission", JSON.stringify(payload));
+      console.log("Survey Payload:", payload);
+
+      if (!GOOGLE_APPS_SCRIPT_URL) {
+        elements.message.className = "message error";
+        elements.message.textContent = currentLanguage === "ar"
+          ? "لم يتم وضع رابط Google Apps Script بعد. تم حفظ الإجابة محلياً للتجربة فقط."
+          : "Google Apps Script URL is not configured yet. The response was saved locally for testing only.";
+        return;
+      }
+
       try {
         const requestBody = JSON.stringify(payload);
+
         if (navigator.sendBeacon) {
           const blob = new Blob([requestBody], { type: "text/plain;charset=UTF-8" });
           const sent = navigator.sendBeacon(GOOGLE_APPS_SCRIPT_URL, blob);
           if (!sent) throw new Error("sendBeacon failed");
         } else {
-          await fetch(GOOGLE_APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: requestBody });
+          await fetch(GOOGLE_APPS_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=UTF-8" },
+            body: requestBody
+          });
         }
+
         elements.message.className = "message success";
-        elements.message.textContent = t.successMessage;
-        elements.form.reset();
-        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
       } catch (error) {
         console.error("Google Apps Script submit error:", error);
         elements.message.className = "message error";
-        elements.message.textContent = currentLanguage === "ar" ? "تعذر إرسال الإجابات. تأكد من رابط Google Apps Script ثم حاول مرة أخرى." : "Could not submit the responses. Please check the Google Apps Script URL and try again.";
+        elements.message.textContent = currentLanguage === "ar"
+          ? "تعذر إرسال الإجابات. تأكد من رابط Google Apps Script ثم حاول مرة أخرى."
+          : "Could not submit the responses. Please check the Google Apps Script URL and try again.";
+        return;
       }
+      elements.message.textContent = t.successMessage;
+      alert(currentLanguage === "ar" ? "تم استلام ردك" : "Your response has been received");
+      elements.form.reset();
     });
 
-    elements.resetBtn.addEventListener("click", function() { elements.form.reset(); elements.message.className = "message"; elements.message.textContent = ""; });
+    elements.resetBtn.addEventListener("click", function() {
+      elements.form.reset();
+      elements.message.className = "message";
+      elements.message.textContent = "";
+    });
+
     renderForm("ar");
   </script>
 </body>
